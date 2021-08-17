@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <style type="text/css">
+    html,body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    #info-window {
+      width: 100%;
+      height: 100%;
+      background: url(https://gitee.com/sorin719/images/raw/master/bg-info-red.png) no-repeat;
+      background-size: cover;
+    }
+  </style>
+  <body>
+      <div id="info-window"></div>
+  </body>
+  <script src="https://unpkg.com/vue@next"></script>
+  <script>
+      const app = {
+        data() {
+          return {};
+        },
+        mounted() {},
+        methods: {}
+      };
+      Vue.createApp(app).mount('#info-window');
+  </script>
+</html>
