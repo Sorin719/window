@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script src="../vue.min.js"></script>
+    <script src="../axios.min.js"></script>
+    <script src="../less.min.js"></script>
+  </head>
+  <style type="text/css">
+    html,body {
+      width: 572px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .info-window {
+      width: 100%;
+      height: 100%;
+      background: url(https://raw.githubusercontent.com/Sorin719/images/main/bg-info-green.png) no-repeat;
+      background-size: cover;
+    }
+
+    .display-flex {
+      display: flex;
+      padding: 30px 35px;
+      box-sizing: border-box;
+    }
+
+    .display-flex ul {
+      flex: 1;
+      margin: 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
+    .display-flex li {
+      list-style: none;
+      color: #fff;
+      font-size:  26px;
+      margin-bottom: 20px;
+    }
+
+    .display-flex li span {
+        word-break: break-all;
+    }
+  </style>
+  <body>
+      <div id="info-window" class="info-window">
+        <div class="display-flex">
+          <ul>
+            <li>
+              <label>传感器类型：</label>
+              <span>{{ eventDetail?.detectorType }}</span>
+            </li>
+           <li>
+              <label>位置：</label>
+              <span>{{ eventDetail?.address }}</span>
+            </li>
+            <li>
+              <label>关联建筑：</label>
+              <span>{{ eventDetail?.relatedBuilding }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+  </body>
+  <script>
+    const apiUrl = 'http://yq01-dba-xdb2-a4329.yq01.baidu.com:8401/';
+    const app =new Vue({
+        el: '#info-window',
+        data: {
+            eventDetail: {}
+        },
+        mounted() {
+        this.getEventDetail();
+        },
+        methods: {
+            async getEventDetail() {
+                const id = this.queryUrlParam('id');
+                const type = this.queryUrlParam('type');
+                const res = await axios.get(`${apiUrl}guandu/ioc/point/sense-devices/${type}/${id}`);
+                // const res = await axios.get(`${apiUrl}guandu/ioc/point/sense-devices/2/44301A1`);
+                if (res.data.status === 200) {
+                    const {data} = res.data;
+                    console.log(data)
+                    this.eventDetail = data;
+                }
+            },
+            queryUrlParam(name) {
+                const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)');
+                const r = window.location.search.substr(1).match(reg);
+                if (r !== null) return unescape(r[2]);
+                return null;
+            }
+        }
+    });
+</script>
+</html>

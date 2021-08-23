@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script src="../library/vue.min.js"></script>
+    <script src="../library/axios.min.js"></script>
+    <link rel="stylesheet/less" type="text/css" href="./window.less">
+    <script src="../library/less.min.js"></script>
+  </head>
+  <body>
+      <div id="info-window" class="info-window"
+        :class="{
+            'info-window-short': tabStatus === 0,
+            'info-window-middle': tabStatus === 1
+        }"
+      >
+        <div class="display-flex" style="padding-bottom: 0;">
+          <ul>
+            <li>
+              <label>负责人：</label>
+              <span>{{gridPersonDetail?.name}}</span>
+            </li>
+            <li>
+              <label>管辖网络</label>
+              <span>{{gridPersonDetail?.chargeGridName}}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="window-tab-wraper">
+            <ul>
+                <li :class="{'acitve-tab': tabStatus === 1}" @click="switchTab(1)">当前案件</li>
+                <li :class="{'acitve-tab': tabStatus === 2}" @click="switchTab(2)">历史案件</li>
+            </ul>
+        </div>
+        <div v-if="tabStatus === 1" class="display-flex" style="padding-bottom: 0;">
+            <ul>
+              <li>
+                <label>案件类型：</label>
+                <span>{{currentCase?.type}}</span>
+              </li>
+              <li>
+                <label>时间：</label>
+                <span>{{currentCase?.time}}</span>
+              </li>
+              <li>
+                <label>案件状态：</label>
+                <span>{{currentCase?.status}}</span>
+                <a class="btn-common" @click="queryPersonTrace">人员轨迹</a>
+              </li>
+            </ul>
+          </div>
+        <div v-if="tabStatus === 2" class="window-table-wraper" style="height:calc(100% - 235px);">
+          <div class="window-table-header">
+            <table>
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>案件类型</th>
+                  <th>地点</th>
+                  <th>时间</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <div class="window-table-body" style="max-height:calc(100% - 40px);">
+            <table>
+              <tbody>
+                <tr v-for="(item, index) in historyCase" :key="`event_${index}`">
+                  <td>{{item.id}}</td>
+                  <td>{{item.type}}</td>
+                  <td>{{item.address}}</td>
+                  <td>{{item.time}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="table-mask" v-if="tabStatus === 2"></div>
+      </div>
+  </body>
+  <script>
+      const apiUrl = 'http://yq01-dba-xdb2-a4329.yq01.baidu.com:8401/';
+      const app = new Vue({
+        el: '#info-window',
+        data: {
+            tabStatus: 0,
+            gridPersonDetail: {},
+            currentCase: {},
+            historyCase: []
+        },
+        mounted() {
+            this.getGridPersonDetail();
+        },
+        methods: {
+          async getGridPersonDetail() {
+            const id = this.queryUrlParam('id');
+            const res = await axios.get(`${apiUrl}guandu/ioc/point/grid-persons/${id}`);
+            if (res.data.status === 200 && res.data.data) {
+                this.gridPersonDetail = res.data.data;
+            }
+          },
+          async getCurrentCase() {
+            const id = this.queryUrlParam('id');
+            const res = await axios.get(`${apiUrl}guandu/ioc/point/grid-persons/case/now/${id}`);
+            if (res.data.status === 200 && res.data.data) {
+                this.currentCase = res.data.data;
+            }
+          },
+          async getHistoryCase() {
+            const id = this.queryUrlParam('id');
+            const res = await axios.get(`${apiUrl}guandu/ioc/point/grid-persons/case/history/${id}`);
+            if (res.data.status === 200 && res.data.data) {
+                this.historyCase = res.data.data.dataList;
+            }
+          },
+          switchTab(tab) {
+            this.tabStatus = tab;
+            if (tab === 1) {
+                this.getCurrentCase();
+            } else {
+                this.getHistoryCase();
+            }
+          },
+          queryUrlParam(name) {
+            const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)');
+            const r = window.location.search.substr(1).match(reg);
+            if (r !== null) return unescape(r[2]);
+            return null;
+          },
+          queryPersonTrace(type) {
+            w51_event('QueryTrace', JSON.stringify(this.gridPersonDetail)); 
+          }
+        }
+      });
+  </script>
+</html>

@@ -2,33 +2,132 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script src="../library/vue.min.js"></script>
+    <script src="../library/axios.min.js"></script>
+    <link rel="stylesheet/less" type="text/css" href="./window.less">
+    <script src="../library/less.min.js"></script>
   </head>
   <style type="text/css">
-    html,body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-    #info-window {
-      width: 100%;
-      height: 100%;
-      background: url(https://gitee.com/sorin719/images/raw/master/bg-info-red.png) no-repeat;
-      background-size: cover;
-    }
   </style>
   <body>
-      <div id="info-window"></div>
+      <div id="info-window" class="info-window">
+        <div class="display-flex" style="padding-bottom: 0;">
+          <ul>
+            <li>{{eventName}}</li>
+            <li>
+              <label>事件类型：</label>
+              <span>{{eventDetail?.type}}</span>
+            </li>
+            <li>
+              <label>时间：</label>
+              <span>{{eventDetail?.time}}</span>
+            </li>
+            <li>
+              <label>地点：</label>
+              <span>{{eventDetail?.address}}</span>
+            </li>
+            <li>
+              <label>上报网格员：</label>
+              <span>{{eventDetail?.memberName ?? eventDetail?.deviceName}}</span>
+              <a v-if="eventDetail?.memberName" class="btn-call" @click="callNumber('discover')"></a>
+            </li>
+            <li>
+              <label>案件状态：</label>
+              <span v-if="eventDealDone" class="event-status-done">案件结果</span>
+              <span v-else="eventDealing" class="event-status-dealing">案件处置</span>
+            </li>
+          </ul>
+          <div class="flex-right">
+            <a class="btn-common" @click="routePlan">路径规划</a>
+            <div>
+              <img :src="eventDetail?.photoUrl" class="event-img">
+            </div>
+          </div>
+        </div>
+        <div v-if="eventDealing" class="display-flex" style="padding: 0 35px;">
+            <ul class="border-left border-left-red">
+                <li>
+                  <label>处置网格员：</label>
+                  <span>{{dealPerson?.memberName}}</span>
+                  <a class="btn-call" @click="callNumber('deal')"></a>
+                </li>
+                <li>
+                    <label>处置详情：</label>
+                    <span>{{dealPerson?.dealContent}}</span>
+                  </li>
+                <li>
+                    <label>时间：</label>
+                    <span>{{dealPerson?.time}}</span>
+                  </li>
+              </ul>
+              <div class="flex-right">
+                <a class="btn-common">改派</a>
+                <div style="height: calc(100% - 50px);">
+                  <img :src="dealPerson?.photoUrl" class="event-img" style="height: 100%">
+                </div>
+              </div>
+        </div>
+        <div v-if="eventDealDone" class="display-flex" style="padding: 0 35px;">
+            <ul class="border-left border-left-blue">
+                <li>
+                <li>
+                    <label>处置结果：</label>
+                    <span>{{dealResult?.dealResult}}</span>
+                  </li>
+                <li>
+                    <label>时间：</label>
+                    <span>{{dealResult.time}}</span>
+                  </li>
+              </ul>
+        </div>
+      </div>
   </body>
-  <script src="https://unpkg.com/vue@next"></script>
   <script>
-      const app = {
-        data() {
-          return {};
+      const apiUrl = 'http://yq01-dba-xdb2-a4329.yq01.baidu.com:8401/';
+      const app = new Vue({
+        el: '#info-window',
+        data: {
+            eventName: 'xxxx事件',
+            eventDetail: {},
+            dealPerson: {},
+            dealResult: {},
+            eventDealing: false,
+            eventDealDone: false
         },
-        mounted() {},
-        methods: {}
-      };
-      Vue.createApp(app).mount('#info-window');
+        mounted() {
+          this.getEventDetail();
+        },
+        methods: {
+          async getEventDetail() {
+            const id = this.queryUrlParam('id');
+            const type = this.queryUrlParam('type');
+            const res = await axios.get(`${apiUrl}guandu/ioc/events/${type}/${id}`);
+            if (res.data.status === 200) {
+              const data = res.data.data;
+              this.eventName = data?.eventName;
+              this.eventDetail = data?.discover;
+              this.dealPerson = data?.deal;
+              this.dealResult = data?.result;
+              this.eventDealing = Object.keys(this.dealPerson).length;
+              this.eventDealDone = Object.keys(this.dealResult).length;
+            }
+          },
+          queryUrlParam(name) {
+            const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)');
+            const r = window.location.search.substr(1).match(reg);
+            if (r !== null) return unescape(r[2]);
+            return null;
+          },
+          callNumber(type) {
+            const params = type === 'discover'
+              ? JSON.stringify(this.eventDetail)
+              : JSON.stringify(this.dealPerson);
+            w51_event('MakeCall', params); 
+          },
+          routePlan() {
+            w51_event('RoutePlan', JSON.stringify(eventDetail)); 
+          }
+        }
+      });
   </script>
 </html>

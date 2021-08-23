@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script src="../library/vue.min.js"></script>
+    <script src="../library/axios.min.js"></script>
+    <link rel="stylesheet/less" type="text/css" href="./window.less">
+    <script src="../library/less.min.js"></script>
+  </head>
+  <body>
+      <div id="info-window" class="info-window"
+        :class="{'info-window-red': poiType === 3, 'info-window-green': poiType === 2}"
+      >
+        <div class="display-flex" style="padding-bottom: 0;">
+          <ul>
+            <li>
+              <label>负责人：</label>
+              <span>{{placeInfo?.chargePersonName}}</span>
+            </li>
+            <li>
+              <label>电话：</label>
+              <a 
+                class="btn-call"
+                :class="{'btn-call-red': poiType === 3, 'btn-call-green': poiType === 2}"
+                @click="callNumber"
+              ></a>
+            </li>
+            <li>
+              <label>场所地址：</label>
+              <span>{{placeInfo?.address}}</span>
+            </li>
+          </ul>
+          <div class="flex-right">
+            <div>
+              <img src="" class="event-img">
+            </div>
+          </div>
+        </div>
+        <div class="window-table-wraper">
+          <a class="btn-common"
+            :class="{'btn-common-red': poiType === 3, 'btn-common-green': poiType === 2}"
+          >
+            关联设备({{placeInfo?.deviceList?.length ?? placeInfo?.materialList?.length}}个)
+          </a>
+          <div class="window-table-header">
+            <table>
+              <thead>
+                <tr>
+                  <th v-for="item in associatedType[poiType]">{{item}}</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <div v-if="poiType !== 3" class="window-table-body">
+            <table>
+              <tbody>
+                <tr v-for="(item, index) in placeInfo?.deviceList" :key="`device_${index}`">
+                  <td>{{item.id}}</td>
+                  <td>{{item.deviceType}}</td>
+                  <td>
+                    <span class="device-status"
+                      :class="{
+                        'status-online': item.deviceStatus === 0,
+                        'status-offline': item.deviceStatus === 1,
+                        'status-modify': item.deviceStatus === 2
+                      }"
+                    >&bull;</span>
+                    {{deviceStatus[item.deviceStatus]}}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div v-if="poiType === 3" class="window-table-body">
+            <table>
+              <tbody>
+                <tr v-for="(item, index) in placeInfo?.materialList" :key="`device_${index}`">
+                  <td>{{item.id}}</td>
+                  <td>{{item.materialType}}</td>
+                  <td>{{item.materialNum}}</td>
+                  <td>{{item.materialSituation}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="table-mask"></div>
+      </div>
+  </body>
+  <script>
+      const apiUrl = 'http://yq01-dba-xdb2-a4329.yq01.baidu.com:8401/';
+      const app = new Vue({
+        el: '#info-window',
+        data: {
+          poiType: 1,
+          placeInfo: {},
+          deviceStatus: {
+            0: '在线',
+            1: '离线',
+            2: '维修'
+          },
+          associatedType: {
+            1: ['序号', '设备类型', '设备状态'],
+            2: ['序号', '设备类型', '设备状态'],
+            3: ['序号', '物资类型', '数量(个)', '近期使用情况']
+          }
+        },
+        mounted() {
+          this.poiType = +this.queryUrlParam('type');
+          this.getPlacceDetail();
+        },
+        methods: {
+          async getPlacceDetail() {
+            const id = this.queryUrlParam('id');
+            const type = this.queryUrlParam('type');
+            const res = await axios.get(`${apiUrl}guandu/ioc/point/places/${type}/${id}`);
+            if (res.data.status === 200 && res.data.data) {
+              const data = res.data.data;
+              this.placeInfo = data;
+            }
+          },
+          queryUrlParam(name) {
+            const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)');
+            const r = window.location.search.substr(1).match(reg);
+            if (r !== null) return unescape(r[2]);
+            return null;
+          },
+          callNumber(type) {
+            w51_event('MakeCall', JSON.stringify(this.placeInfo)); 
+          }
+        }
+      });
+  </script>
+</html>

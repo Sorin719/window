@@ -1,0 +1,236 @@
+html,body {
+    margin: 0;
+    padding: 0;
+}
+.info-window {
+    width: 572px;
+    height: 645px;
+    background: url(https://raw.githubusercontent.com/Sorin719/images/main/bg-info-blue.png) no-repeat;
+    background-size: cover;
+    position: relative;
+    .display-flex {
+        display: flex;
+        padding: 20px 35px;
+        box-sizing: border-box;
+        ul {
+            flex: 1;
+            margin: 0;
+            padding: 0;
+            flex-wrap: wrap;
+        }
+        li {
+            list-style: none;
+            color: #fff;
+            font-size:  26px;
+            margin-bottom: 10px;
+            span {
+                word-break: break-all;
+            }
+        }
+        .btn-call {
+            display: inline-block;
+            width: 34px;
+            height: 28px;
+            background: url(https://raw.githubusercontent.com/Sorin719/images/main/icon-phone-blue.png) no-repeat;
+            background-size: cover;
+        }
+        .btn-call-red {
+            display: inline-block;
+            width: 34px;
+            height: 28px;
+            background: url(https://raw.githubusercontent.com/Sorin719/images/main/icon-phone-red.png) no-repeat;
+            background-size: cover;
+        }
+        .btn-call-green {
+            display: inline-block;
+            width: 34px;
+            height: 28px;
+            background: url(https://raw.githubusercontent.com/Sorin719/images/main/icon-phone-green.png) no-repeat;
+            background-size: cover;
+        }
+        .flex-right {
+            width: 145px;
+            text-align: right;
+        }
+    }
+    .event-status-done {
+        display: inline-block;
+        padding: 0px 10px;
+        background-color: rgb(45, 180, 253);
+        border-radius: 4px;
+        line-height: 30px;
+        font-size: 12px;
+    }
+    .event-status-dealing {
+        display: inline-block;
+        padding: 0px 10px;
+        background-color: rgb(255, 94, 94);
+        border-radius: 4px;
+        line-height: 30px;
+        font-size: 12px;
+    }
+    .border-left {
+        position: relative;
+    }
+    .border-left-red {
+        &:after {
+            content: '';
+            display: inline-block;
+            width: 1px;
+            background: rgb(255, 94, 94);
+            height: calc(100% - 20px);
+            position: absolute;
+            left: -10px;
+            top: 10px;
+        }
+    }
+    .border-left-blue {
+        &:after {
+            content: '';
+            display: inline-block;
+            width: 1px;
+            background: rgba(45, 180, 253, 0.8);
+            height: calc(100% - 20px);
+            position: absolute;
+            left: -10px;
+            top: 10px;
+        }
+    }
+    .btn-common {
+        display: inline-block;
+        padding: 5px 20px;
+        color: rgba(45, 180, 253, 0.8);
+        border: solid 1px rgba(45, 180, 253, 0.8);
+        cursor: default;
+        font-size: 24px;
+        &:hover {
+            color: #fff;
+            background: rgba(45, 180, 253, 0.8);
+        }
+    }
+    .btn-common-red {
+        display: inline-block;
+        padding: 5px 20px;
+        color: rgba(151, 73, 73, 0.8);
+        border: solid 1px rgba(151, 73, 73, 0.8) !important;
+        cursor: default;
+        font-size: 24px;
+        &:hover {
+            color: #fff;
+            background: rgba(255, 94, 94, 0.8) !important;
+        }
+    }
+    .btn-common-green {
+        display: inline-block;
+        padding: 5px 20px;
+        color: rgba(84, 228, 175, 0.8);
+        border: solid 1px rgba(84, 228, 175, 0.8) !important;
+        cursor: default;
+        font-size: 24px;
+        &:hover {
+            color: #fff;
+            background: rgba(84, 228, 175, 0.8) !important;
+        }
+    }
+    .event-img {
+        width: 138px;
+        height: 140px;
+        margin-top: 10px;
+    }
+    .window-table-wraper {
+        padding: 0 35px;
+        height: calc(100% - 235px);
+        width: 100%;
+        box-sizing: border-box;
+        .window-table-header {
+            table {
+                width: 100%;
+                table-layout: fixed;
+                th {
+                    color: #fff;
+                    font-size: 22px;
+                    height: 48px;
+                }
+            }
+        }
+        .window-table-body {
+            max-height: calc(100% - 100px);
+            overflow: auto;
+            table {
+                width: 100%;
+                table-layout: fixed;
+            }
+            tbody {
+                tr {
+                    height: 40px;
+                }
+                td {
+                    color: #fff;
+                    font-size: 20px;
+                    height: 40px;
+                    color: #fff;
+                    text-align: center;
+                }
+            }
+        }
+        .status-online { 
+            color: #4BE3A6;
+        }
+        .status-offline {
+            color: #B62222;
+        }
+        .status-modify {
+            color: #FFB651;
+        }
+    }
+    .table-mask {
+        width: 100%;
+        height: 200px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, .8) 30%, rgba(0, 0, 0, .4) 70%, rgba(0, 0, 0, 0) 100%);
+        z-index: 9;
+        pointer-events: none;
+    }
+    .window-tab-wraper {
+        ul {
+            display: flex;
+        }
+        li {
+            list-style: none;
+            width: 172px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            background: rgba(0, 0, 0, .1);
+            color: rgba(255, 255, 255, .7);
+            text-shadow: 0px 4px 2px rgba(0, 13, 37, 0.49);
+            font-weight: 400;
+            margin-right: 15px;
+            position: relative;
+            cursor: default;
+        }          
+        .acitve-tab {
+            background: linear-gradient(90deg, rgba(41, 153, 254, .5), rgba(52, 236, 251, .5));
+            border:1px transparent solid;
+            border-image: linear-gradient(to right,#2999FE, #34ECFB) 1 10;
+        }
+    }
+}
+.info-window-red {
+    background: url(https://raw.githubusercontent.com/Sorin719/images/main/bg-info-red.png) no-repeat !important;
+    background-size: cover;
+}
+.info-window-green {
+    background: url(https://raw.githubusercontent.com/Sorin719/images/main/bg-info-green.png) no-repeat !important;
+    background-size: cover;
+}
+.info-window-short {
+    height: 235px;
+    background-size: cover;
+}
+.info-window-middle {
+    height: 515px;
+    background-size: cover;
+}
